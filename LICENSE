@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+==============================================================================
+EXCLUSION OF ASSETS / LICENSE SCOPE:
+
+The MIT License above applies ONLY to the source code (.gd, .cs, .shader, etc.) of this project.
+
+All non-code assets—including but not limited to graphics, visual art, 3D models, 
+textures, audio, music, sound effects, UI designs, and narrative content—are 
+EXCLUDED from the MIT License. 
+
+All rights to these non-code assets are reserved (All Rights Reserved). They may 
+not be copied, modified, redistributed, or used in other projects without express 
+written permission from the copyright holder.
+==============================================================================
