@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Spawner/Pipe_Spawner.gd" type="Script" id=1]
+[ext_resource path="res://Pipe/Pipe.tscn" type="PackedScene" id=2]
+[ext_resource path="res://collactable_objects/Crysyctal.tscn" type="PackedScene" id=3]
+
+[node name="Pipe_Spawner" type="Node2D"]
+position = Vector2( 1176, 272 )
+script = ExtResource( 1 )
+obs_obj = ExtResource( 2 )
+col_obj = ExtResource( 3 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

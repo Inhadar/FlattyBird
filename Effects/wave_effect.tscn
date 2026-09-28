@@ -1,0 +1,99 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec2 center;
+uniform float force;
+uniform float size;
+uniform float thickness;
+
+void fragment()
+{
+	float ratio =  SCREEN_PIXEL_SIZE.x/ SCREEN_PIXEL_SIZE.y;
+	vec2 scaleUv = (SCREEN_UV - vec2(0.5,0.0)) / vec2(ratio,1.0)+ vec2(0.5,0.0);
+	float mask = (1.0 - smoothstep(size-0.1,size,length(scaleUv - center))) *
+			smoothstep(size-thickness-0.1,size-thickness,length(scaleUv - center));
+	//smoothstep(size-0.1,size,length(scaleUv - center))
+	vec2 disp = normalize(scaleUv - center)*force * mask;
+	//COLOR = vec4(SCREEN_UV - disp(0.0,1.0);
+	COLOR = texture(SCREEN_TEXTURE,SCREEN_UV - disp);
+	//COLOR.rgb = vec3(mask);
+	
+	
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/center = Vector2( 0.5, 0.5 )
+shader_param/force = 0.0
+shader_param/size = 0.0
+shader_param/thickness = 0.11
+
+[sub_resource type="Animation" id=3]
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("wave_effect:material:shader_param/force")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.06 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("wave_effect:material:shader_param/size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "wave"
+length = 0.5
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("wave_effect:material:shader_param/size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("wave_effect:material:shader_param/force")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.06 ]
+}
+
+[node name="Node" type="Node"]
+
+[node name="wave_effect" type="ColorRect" parent="."]
+material = SubResource( 2 )
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 3 )
+anims/wave = SubResource( 4 )

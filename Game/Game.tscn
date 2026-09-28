@@ -1,0 +1,190 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://Players/Bird.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Spawner/Pipe_Spawner.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Game/Game.gd" type="Script" id=3]
+[ext_resource path="res://fonts/FiraSans-Bold.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://Effects/screen_shake/screen_shake.tscn" type="PackedScene" id=5]
+[ext_resource path="res://PNG/BackGround.png" type="Texture" id=6]
+[ext_resource path="res://PNG/label.png" type="Texture" id=7]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec2 center;
+uniform float force;
+uniform float size;
+uniform float thickness;
+
+void fragment()
+{
+	float ratio =  SCREEN_PIXEL_SIZE.x/ SCREEN_PIXEL_SIZE.y;
+	vec2 scaleUv = (SCREEN_UV - vec2(0.5,0.0)) / vec2(ratio,1.0)+ vec2(0.5,0.0);
+	float mask = (1.0 - smoothstep(size-0.1,size,length(scaleUv - center))) *
+			smoothstep(size-thickness-0.1,size-thickness,length(scaleUv - center));
+	//smoothstep(size-0.1,size,length(scaleUv - center))
+	vec2 disp = normalize(scaleUv - center)*force * mask;
+	//COLOR = vec4(SCREEN_UV - disp(0.0,1.0);
+	COLOR = texture(SCREEN_TEXTURE,SCREEN_UV - disp);
+	//COLOR.rgb = vec3(mask);
+	
+	
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+resource_local_to_scene = true
+shader = SubResource( 1 )
+shader_param/center = Vector2( 0.5, 0.5 )
+shader_param/force = 0.12
+shader_param/size = 1.8
+shader_param/thickness = 0.22
+
+[sub_resource type="Animation" id=5]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("wave_screen/wave_effect:material:shader_param/thickness")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.11 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("wave_screen/wave_effect:material:shader_param/size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.9 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("wave_screen/wave_effect:material:shader_param/force")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.08 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "wave"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("wave_screen/wave_effect:material:shader_param/force")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.12 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("wave_screen/wave_effect:material:shader_param/size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.8 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("wave_screen/wave_effect:material:shader_param/thickness")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.1, 0.22 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("wave_screen/wave_effect:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[sub_resource type="DynamicFont" id=6]
+size = 150
+font_data = ExtResource( 4 )
+
+[node name="Game" type="Node"]
+script = ExtResource( 3 )
+
+[node name="Bird" parent="." instance=ExtResource( 1 )]
+position = Vector2( 198, 976 )
+
+[node name="Camera2D" parent="Bird" instance=ExtResource( 5 )]
+current = true
+limit_left = 0
+limit_top = 0
+limit_right = 1024
+limit_bottom = 0
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="Bird"]
+
+[node name="TextureRect" type="Sprite" parent="Bird/ParallaxBackground"]
+position = Vector2( 541, 1122 )
+scale = Vector2( 0.210439, 0.210439 )
+texture = ExtResource( 6 )
+
+[node name="Pipe_Spawner" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1203, 1066 )
+
+[node name="wave_screen" type="Node" parent="."]
+
+[node name="wave_effect" type="ColorRect" parent="wave_screen"]
+visible = false
+material = SubResource( 2 )
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="wave_screen"]
+root_node = NodePath("../..")
+reset_on_save = false
+anims/RESET = SubResource( 5 )
+anims/wave = SubResource( 4 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Sprite" type="Sprite" parent="CanvasLayer"]
+position = Vector2( 127.263, 45.5 )
+scale = Vector2( 0.198218, 0.198218 )
+texture = ExtResource( 7 )
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+modulate = Color( 0.364706, 0.388235, 0.572549, 1 )
+margin_left = 16.0
+margin_top = 1.0
+margin_right = 363.0
+margin_bottom = 182.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_fonts/font = SubResource( 6 )
+text = "45"
